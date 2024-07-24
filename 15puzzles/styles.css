@@ -1,178 +1,69 @@
-const board = document.getElementById('puzzle-board');
-const shuffleButton = document.getElementById('shuffle-button');
-const movesDisplay = document.getElementById('moves');
-const timeDisplay = document.getElementById('time');
-const highScoreDisplay = document.getElementById('high-score');
-const congratulations = document.getElementById('congratulations');
-const shuffleInfo = document.getElementById('shuffle-info');
-
-let tiles = [];
-let moveCount = 0;
-let timerInterval;
-let elapsedTime = 0;
-let highScore = localStorage.getItem('highScore') || 0;
-let isPuzzleSolvedState = true;
-
-// Tạo câu đố
-function initBoard() {
-    const savedState = JSON.parse(localStorage.getItem('gameState'));
-    if (savedState) {
-        tiles = savedState.tiles;
-        moveCount = savedState.moveCount;
-        elapsedTime = savedState.elapsedTime;
-        isPuzzleSolvedState = savedState.isPuzzleSolvedState;
-    } else {
-        tiles = generateSolvablePuzzle();
-    }
-    
-    renderBoard();
-    if (!savedState) {
-        clearInterval(timerInterval);
-        elapsedTime = 0;
-        timeDisplay.textContent = '00:00';
-        resetTimer(); // Start the timer if there is no saved state
-    } else {
-        timerInterval = setInterval(updateTime, 1000);
-    }
-    updateHighScore();
-    toggleShuffleInfo(isPuzzleSolvedState); // Update shuffle info visibility
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
 }
 
-function renderBoard() {
-    board.innerHTML = '';
-    tiles.forEach((tile, index) => {
-        const tileElement = document.createElement('div');
-        tileElement.className = 'tile' + (tile === null ? ' empty' : '');
-        tileElement.textContent = tile ? tile : '';
-        tileElement.addEventListener('click', () => moveTile(index));
-        board.appendChild(tileElement);
-    });
-    movesDisplay.textContent = moveCount;
+h1 {
+    margin: 20px 0;
 }
 
-function moveTile(index) {
-    if (!isPuzzleSolvedState) {
-        const emptyIndex = tiles.indexOf(null);
-        const [row, col] = [Math.floor(index / 4), index % 4];
-        const [emptyRow, emptyCol] = [Math.floor(emptyIndex / 4), emptyIndex % 4];
-
-        if (
-            (row === emptyRow && Math.abs(col - emptyCol) === 1) ||
-            (col === emptyCol && Math.abs(row - emptyRow) === 1)
-        ) {
-            [tiles[index], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[index]];
-            moveCount++;
-            renderBoard();
-            saveGameState();
-            if (isPuzzleSolved()) {
-                handleWin();
-            }
-        }
-    }
+.info {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
 }
 
-function shuffleBoard() {
-    if (isPuzzleSolvedState) {
-        tiles = generateSolvablePuzzle();
-
-        moveCount = 0;
-        resetTimer();  // reset time khi shuffle
-        renderBoard();
-        toggleShuffleInfo(false); // Ẩn thông báo shuffle
-        congratulations.classList.add('hidden'); // Ẩn thông báo chiến thắng
-        isPuzzleSolvedState = false;
-        saveGameState();
-    }
+.puzzle-container {
+    display: grid;
+    grid-template-columns: repeat(4, 100px);
+    grid-template-rows: repeat(4, 100px);
+    gap: 5px;
+    justify-content: center;
+    margin: 20px auto;
+    width: fit-content;
 }
 
-function resetTimer() {
-    clearInterval(timerInterval);
-    elapsedTime = 0;
-    timeDisplay.textContent = '00:00';
-    timerInterval = setInterval(updateTime, 1000);
+.tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #87CEEB;
+    border-radius: 5px;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
 }
 
-function isPuzzleSolved() {
-    const isSolved = tiles.slice(0, -1).every((tile, index) => tile === index + 1);
-    if (!isSolved) {
-        return false;
-    }
-
-    // Đảm bảo trạng thái có thể giải đc
-    const index14 = tiles.indexOf(14);
-    const index15 = tiles.indexOf(15);
-
-    // CHECK xem 14 có trước 15 ko
-    return index14 < index15;
+.empty {
+    background-color: transparent;
+    cursor: default;
 }
 
-function handleWin() {
-    clearInterval(timerInterval);
-    congratulations.classList.remove('hidden');
-    const score = 1000 - moveCount;
-    if (score > highScore) {
-        highScore = score;
-        localStorage.setItem('highScore', highScore);
-        updateHighScore();
-    }
-    isPuzzleSolvedState = true;
-    toggleShuffleInfo(true); // Hiển thị thông báo shuffle
-    saveGameState();
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+.hidden {
+    display: none;
 }
 
-function updateHighScore() {
-    highScoreDisplay.textContent = highScore;
+
+#congratulations, #shuffle-info {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #4CAF50;
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 5px;
 }
 
-function updateTime() {
-    elapsedTime++;
-    const minutes = String(Math.floor(elapsedTime / 60)).padStart(2, '0');
-    const seconds = String(elapsedTime % 60).padStart(2, '0');
-    timeDisplay.textContent = `${minutes}:${seconds}`;
+#shuffle-info {
+    color: #FF5733; /* Thay đổi màu sắc thông báo */
 }
-
-function toggleShuffleInfo(show) {
-    shuffleInfo.classList.toggle('hidden', !show);
-}
-
-function saveGameState() {
-    const gameState = {
-        tiles,
-        moveCount,
-        elapsedTime,
-        isPuzzleSolvedState
-    };
-    localStorage.setItem('gameState', JSON.stringify(gameState));
-}
-
-function isSolvable(puzzle) {
-    const oneDArray = puzzle.filter(n => n !== null); // Xóa title trống
-    let inversions = 0;
-
-    for (let i = 0; i < oneDArray.length - 1; i++) {
-        for (let j = i + 1; j < oneDArray.length; j++) {
-            if (oneDArray[i] > oneDArray[j]) {
-                inversions++;
-            }
-        }
-    }
-
-    return inversions % 2 === 0;
-}
-
-function generateSolvablePuzzle() {
-    let puzzle;
-    do {
-        puzzle = Array.from({ length: 15 }, (_, i) => i + 1).concat(null); // Đảm bảo có lời giải
-        for (let i = puzzle.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [puzzle[i], puzzle[j]] = [puzzle[j], puzzle[i]];
-        }
-    } while (!isSolvable(puzzle));
-
-    return puzzle;
-}
-
-shuffleButton.addEventListener('click', shuffleBoard);
-
-initBoard();
