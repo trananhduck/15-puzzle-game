@@ -160,7 +160,7 @@ function isSolvable(puzzle) {
 
     // Kiểm tra xem câu đố có giải được không
     return (inversions % 2 === 0 && emptyRowFromBottom % 2 !== 0) ||
-           (inversions % 2 !== 0 && emptyRowFromBottom % 2 === 0);
+        (inversions % 2 !== 0 && emptyRowFromBottom % 2 === 0);
 }
 
 function generateSolvablePuzzle() {
