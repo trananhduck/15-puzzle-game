@@ -1,7 +1,7 @@
 # Trò Chơi 15-Puzzle
 
 Chào mừng bạn đến với Trò Chơi 15-Puzzle! Đây là một trò chơi xếp hình cổ điển với mục tiêu là sắp xếp các ô số theo thứ tự. Hãy thử thách kỹ năng giải đố của bạn và cải thiện thời gian chơi qua mỗi lượt!
-
+Link: https://trananhduck.github.io/15-puzzle-game/15puzzles/
 ## Tính Năng
 
 - **Lối Chơi 15-Puzzle Cổ Điển**: Trượt các ô để sắp xếp chúng theo thứ tự.
