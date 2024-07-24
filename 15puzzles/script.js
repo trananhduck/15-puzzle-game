@@ -11,17 +11,16 @@ let moveCount = 0;
 let timerInterval;
 let elapsedTime = 0;
 let highScore = localStorage.getItem('highScore') || 0;
-let isPuzzleSolvedState = true; // New variable to track if the puzzle is solved or not
-
-// Create and initialize the puzzle board
+let isPuzzleSolvedState = true;
+//Tạo câu đố
 function initBoard() {
-    tiles = generateSolvablePuzzle(); // Generate a solvable puzzle
+    tiles = generateSolvablePuzzle();
     renderBoard();
     clearInterval(timerInterval);
     elapsedTime = 0;
     timeDisplay.textContent = '00:00';
     updateHighScore();
-    toggleShuffleInfo(true); // Show the shuffle info initially
+    toggleShuffleInfo(true); //thông báo ấn shuffle
 }
 
 function renderBoard() {
@@ -58,14 +57,14 @@ function moveTile(index) {
 
 function shuffleBoard() {
     if (isPuzzleSolvedState) {
-        tiles = generateSolvablePuzzle(); // Generate a solvable puzzle
+        tiles = generateSolvablePuzzle();
 
         moveCount = 0;
-        resetTimer();  // Reset the timer when shuffling
+        resetTimer();  // reset time khi shuffle
         renderBoard();
-        toggleShuffleInfo(false); // Hide shuffle info after shuffling
-        congratulations.classList.add('hidden'); // Hide congratulations message
-        isPuzzleSolvedState = false; // Mark puzzle as not solved
+        toggleShuffleInfo(false); //Ẩn thông báo shuffle
+        congratulations.classList.add('hidden'); // Ẩn thông báo chiến thắng
+        isPuzzleSolvedState = false;
     }
 }
 
@@ -82,25 +81,25 @@ function isPuzzleSolved() {
         return false;
     }
 
-    // Ensure the puzzle is in a valid solved state
+    // Đảm bảo trạng thái có thể giải đc
     const index14 = tiles.indexOf(14);
     const index15 = tiles.indexOf(15);
-    
-    // Check if 14 is before 15 in a solved state
+
+    // CHECK xem 14 có trước 15 ko
     return index14 < index15;
 }
 
 function handleWin() {
     clearInterval(timerInterval);
     congratulations.classList.remove('hidden');
-    const score = 1000 - moveCount; // Calculate score
+    const score = 1000 - moveCount;
     if (score > highScore) {
         highScore = score;
         localStorage.setItem('highScore', highScore);
         updateHighScore();
     }
-    isPuzzleSolvedState = true; // Mark puzzle as solved
-    toggleShuffleInfo(true); // Show shuffle info after solving
+    isPuzzleSolvedState = true;
+    toggleShuffleInfo(true); // Hiển thị thông báo shuffle
 }
 
 function updateHighScore() {
@@ -119,7 +118,7 @@ function toggleShuffleInfo(show) {
 }
 
 function isSolvable(puzzle) {
-    const oneDArray = puzzle.filter(n => n !== null); // Remove the empty tile
+    const oneDArray = puzzle.filter(n => n !== null); // Xóa title trống
     let inversions = 0;
 
     for (let i = 0; i < oneDArray.length - 1; i++) {
@@ -136,7 +135,7 @@ function isSolvable(puzzle) {
 function generateSolvablePuzzle() {
     let puzzle;
     do {
-        puzzle = Array.from({ length: 15 }, (_, i) => i + 1).concat(null); // Create a solvable array with the empty tile
+        puzzle = Array.from({ length: 15 }, (_, i) => i + 1).concat(null); // Đảm bảo có lời giải
         for (let i = puzzle.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [puzzle[i], puzzle[j]] = [puzzle[j], puzzle[i]];
