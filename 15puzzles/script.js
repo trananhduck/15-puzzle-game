@@ -12,15 +12,30 @@ let timerInterval;
 let elapsedTime = 0;
 let highScore = localStorage.getItem('highScore') || 0;
 let isPuzzleSolvedState = true;
-//Tạo câu đố
+
+// Tạo câu đố
 function initBoard() {
-    tiles = generateSolvablePuzzle();
+    const savedState = JSON.parse(localStorage.getItem('gameState'));
+    if (savedState) {
+        tiles = savedState.tiles;
+        moveCount = savedState.moveCount;
+        elapsedTime = savedState.elapsedTime;
+        isPuzzleSolvedState = savedState.isPuzzleSolvedState;
+    } else {
+        tiles = generateSolvablePuzzle();
+    }
+    
     renderBoard();
-    clearInterval(timerInterval);
-    elapsedTime = 0;
-    timeDisplay.textContent = '00:00';
+    if (!savedState) {
+        clearInterval(timerInterval);
+        elapsedTime = 0;
+        timeDisplay.textContent = '00:00';
+        resetTimer(); // Start the timer if there is no saved state
+    } else {
+        timerInterval = setInterval(updateTime, 1000);
+    }
     updateHighScore();
-    toggleShuffleInfo(true); //thông báo ấn shuffle
+    toggleShuffleInfo(isPuzzleSolvedState); // Update shuffle info visibility
 }
 
 function renderBoard() {
@@ -48,6 +63,7 @@ function moveTile(index) {
             [tiles[index], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[index]];
             moveCount++;
             renderBoard();
+            saveGameState();
             if (isPuzzleSolved()) {
                 handleWin();
             }
@@ -62,9 +78,10 @@ function shuffleBoard() {
         moveCount = 0;
         resetTimer();  // reset time khi shuffle
         renderBoard();
-        toggleShuffleInfo(false); //Ẩn thông báo shuffle
+        toggleShuffleInfo(false); // Ẩn thông báo shuffle
         congratulations.classList.add('hidden'); // Ẩn thông báo chiến thắng
         isPuzzleSolvedState = false;
+        saveGameState();
     }
 }
 
@@ -100,6 +117,7 @@ function handleWin() {
     }
     isPuzzleSolvedState = true;
     toggleShuffleInfo(true); // Hiển thị thông báo shuffle
+    saveGameState();
 }
 
 function updateHighScore() {
@@ -115,6 +133,16 @@ function updateTime() {
 
 function toggleShuffleInfo(show) {
     shuffleInfo.classList.toggle('hidden', !show);
+}
+
+function saveGameState() {
+    const gameState = {
+        tiles,
+        moveCount,
+        elapsedTime,
+        isPuzzleSolvedState
+    };
+    localStorage.setItem('gameState', JSON.stringify(gameState));
 }
 
 function isSolvable(puzzle) {
