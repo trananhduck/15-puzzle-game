@@ -146,7 +146,7 @@ function saveGameState() {
 }
 
 function isSolvable(puzzle) {
-    const oneDArray = puzzle.filter(n => n !== null); // Xóa title trống
+    const oneDArray = puzzle.filter(n => n !== null); // Xóa tile trống
     let inversions = 0;
 
     for (let i = 0; i < oneDArray.length - 1; i++) {
@@ -164,14 +164,16 @@ function generateSolvablePuzzle() {
     let puzzle;
     do {
         puzzle = Array.from({ length: 15 }, (_, i) => i + 1).concat(null); // Đảm bảo có lời giải
+        // Xáo trộn câu đố
         for (let i = puzzle.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [puzzle[i], puzzle[j]] = [puzzle[j], puzzle[i]];
         }
-    } while (!isSolvable(puzzle));
+    } while (!isSolvable(puzzle)); // Kiểm tra xem câu đố có giải được không
 
     return puzzle;
 }
+
 
 shuffleButton.addEventListener('click', shuffleBoard);
 
