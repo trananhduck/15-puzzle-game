@@ -1,0 +1,69 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    margin: 20px 0;
+}
+
+.info {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.puzzle-container {
+    display: grid;
+    grid-template-columns: repeat(4, 100px);
+    grid-template-rows: repeat(4, 100px);
+    gap: 5px;
+    justify-content: center;
+    margin: 20px auto;
+    width: fit-content;
+}
+
+.tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #87CEEB;
+    border-radius: 5px;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+}
+
+.empty {
+    background-color: transparent;
+    cursor: default;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+.hidden {
+    display: none;
+}
+
+
+#congratulations, #shuffle-info {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #4CAF50;
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+#shuffle-info {
+    color: #FF5733; /* Thay đổi màu sắc thông báo */
+}
